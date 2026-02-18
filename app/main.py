@@ -3,9 +3,11 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from fastapi.requests import Request
+from fastapi.responses import PlainTextResponse
+
 from app.services.langchain_matcher import match_string_with_langchain
 from app.services.model_factory import get_chat_model
-
 
 app = FastAPI(
     title="CCS AI Name Matcher",
@@ -16,8 +18,6 @@ app = FastAPI(
 @app.get("/health")
 def health():
     return {"status": "ok"}
-from fastapi.responses import PlainTextResponse
-from fastapi.requests import Request
 
 @app.exception_handler(Exception)
 async def debug_exception_handler(request: Request, exc: Exception):

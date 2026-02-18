@@ -1,7 +1,6 @@
 """Tests for prompt file handling."""
 
 import pytest
-from pathlib import Path
 
 from app.services.langchain_matcher import _load_prompt_text
 

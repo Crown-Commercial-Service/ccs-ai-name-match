@@ -1,6 +1,5 @@
 """Tests for mock model behavior."""
 
-import pytest
 from unittest.mock import Mock
 
 from app.services.mock_langchain_model import MockChatModelWithCandidates
