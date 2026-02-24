@@ -8,3 +8,4 @@ python-dotenv
 PyYAML
 pytest
 httpx
+ruff==0.15.1

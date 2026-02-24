@@ -17,7 +17,9 @@ def _load_prompt_text(prompt_path: str) -> str:
     return p.read_text(encoding="utf-8")
 
 
-def _remove_input_from_candidates(input_string: str, candidates: List[str]) -> List[str]:
+def _remove_input_from_candidates(
+    input_string: str, candidates: List[str]
+) -> List[str]:
     """
     Remove the input string from the candidate options (exact match).
 

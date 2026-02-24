@@ -46,5 +46,3 @@ def missing_azure_vars(settings: Optional[Settings] = None) -> Tuple[str, ...]:
     if not s.azure_openai_api_version:
         missing.append("AZURE_OPENAI_API_VERSION")
     return tuple(missing)
-
-

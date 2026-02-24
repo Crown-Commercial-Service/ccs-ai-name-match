@@ -1,5 +1,6 @@
 from app.services.langchain_matcher import _remove_input_from_candidates
 
+
 def test_removes_exact_match():
     input_name = "DWP"
     candidates = ["DWP", "Department for Working Pensions", "HMRC"]
