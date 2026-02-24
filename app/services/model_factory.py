@@ -12,7 +12,6 @@ def _build_mock_model(candidates: List[str]):
     # Local import so the repo doesn't break if mock file isn't used in Azure mode
     from app.services.mock_langchain_model import MockChatModelWithCandidates
 
-
     settings = get_settings()
     return MockChatModelWithCandidates(
         candidates=candidates,

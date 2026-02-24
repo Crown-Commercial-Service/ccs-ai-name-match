@@ -23,7 +23,7 @@ class TestMatchEndpoint:
             "candidates": sample_candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["input_string"] == "Home Office"
@@ -36,7 +36,7 @@ class TestMatchEndpoint:
             "candidates": sample_candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["match"] == "Home Office"
@@ -48,7 +48,7 @@ class TestMatchEndpoint:
             "candidates": sample_candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["match"] is None
@@ -60,7 +60,7 @@ class TestMatchEndpoint:
             "candidates": sample_candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["match"] == "Home Office"
@@ -73,7 +73,7 @@ class TestMatchEndpoint:
             "prompt_path": "prompts/buyer_match_v4.txt",
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["match"] is not None
@@ -105,7 +105,7 @@ class TestMatchEndpoint:
                 "candidates": ["Home Office", "HMRC", "Cabinet Office"],
             },
         )
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["match"] == "HMRC"
@@ -117,10 +117,10 @@ class TestMatchEndpoint:
             "candidates": sample_candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         # Match should not have quotes or extra whitespace
         if data["match"] is not None:
             assert not data["match"].startswith('"')
@@ -143,7 +143,7 @@ class TestRealWorldScenarios:
             "candidates": candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         # With mock model, DWP won't match well
         # This test is more relevant for Azure OpenAI
@@ -160,7 +160,7 @@ class TestRealWorldScenarios:
             "prompt_path": "prompts/buyer_match_v3.txt",
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         # Semantic matching requires Azure OpenAI
 
@@ -176,7 +176,7 @@ class TestRealWorldScenarios:
             "candidates": candidates,
         }
         response = client.post("/match", json=payload)
-        
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["match"] == "Birmingham City Council"
