@@ -6,6 +6,9 @@ pydantic-settings>=2.0.0,<3.0.0
 pydantic
 python-dotenv
 PyYAML
+openpyxl>=3.1.0,<4.0.0
 pytest
 httpx
 ruff==0.15.1
+openpyxl
+pandas
