@@ -192,3 +192,18 @@ To run a specific test file:
 ```bash
 pytest tests/test_api.py
 ```
+
+## Evaluation
+
+To evaluate the accuracy of the name matching service, you should:
+1. Configure credentials to connect to the deployed LLM in your `.env` file
+2. Add the following entry to `.env`, which stops the service defaulting to local (non-LLM) matching
+    ```bash
+    USE_MOCK_LLM=false
+    ```
+3. Download the file `name-match-api truthset.xlsx` from the internal drive
+4. Run the evaluation script:
+    ```bash
+    python experiment_name_matching.py
+    ```
+This will run all examples in `name-match-api truthset.xlsx` through the service, and compute the overall accuracy.
