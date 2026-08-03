@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -30,33 +31,17 @@ def _remove_input_from_candidates(
     return [c for c in candidates if c != input_string]
 
 
-def match_string_with_langchain(
+def _build_messages(
     input_string: str,
     list_of_strings: List[str],
-    model,
-    prompt_path: Optional[str] = None,
-) -> str:
-    """
-    Matches an input string to one of a list of strings using a LangChain model.
-
-    Args:
-        input_string: The string to match.
-        list_of_strings: A list of strings to match against.
-        model: The LangChain model object (e.g., AzureChatOpenAI or mock).
-        prompt_path: Optional prompt file path. If not provided, uses Settings.prompt_path.
-
-    Returns:
-        The model's response content.
-    """
+    prompt_path: Optional[str],
+):
     settings = get_settings()
     effective_prompt_path = (prompt_path or settings.prompt_path or "").strip()
-
     filtered_candidates = _remove_input_from_candidates(input_string, list_of_strings)
 
     if effective_prompt_path:
         prompt_template = _load_prompt_text(effective_prompt_path)
-
-        # Prompt file should contain {input_name} and {candidates}
         system_prompt = prompt_template.format(
             input_name=input_string,
             candidates=json.dumps(filtered_candidates, ensure_ascii=False),
@@ -67,14 +52,48 @@ def match_string_with_langchain(
             f"If you can't find a match, return 'None'."
         )
 
-    messages = [
+    return [
         SystemMessage(content=system_prompt),
         HumanMessage(content=input_string),
     ]
 
-    logger.info("Using LLM to find match for %s", input_string)
-    response = model.invoke(messages)
 
+def _response_content(response) -> str:
     content = getattr(response, "content", "")
     logger.info("Response = %s", content)
     return content
+
+
+def match_string_with_langchain(
+    input_string: str,
+    list_of_strings: List[str],
+    model,
+    prompt_path: Optional[str] = None,
+) -> str:
+    """Match one input string using the model's synchronous interface."""
+    messages = _build_messages(input_string, list_of_strings, prompt_path)
+    logger.info("Using LLM to find match for %s", input_string)
+    return _response_content(model.invoke(messages))
+
+
+async def amatch_string_with_langchain(
+    input_string: str,
+    list_of_strings: List[str],
+    model,
+    prompt_path: Optional[str] = None,
+) -> str:
+    """Match one input without blocking the event loop.
+
+    Native LangChain async invocation is preferred. Models that only expose ``invoke``
+    (including the local mock) are run in a worker thread instead.
+    """
+    messages = _build_messages(input_string, list_of_strings, prompt_path)
+    logger.info("Using LLM to find match for %s", input_string)
+
+    ainvoke = getattr(model, "ainvoke", None)
+    if callable(ainvoke):
+        response = await ainvoke(messages)
+    else:
+        response = await asyncio.to_thread(model.invoke, messages)
+
+    return _response_content(response)
