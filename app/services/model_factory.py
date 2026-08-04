@@ -32,6 +32,7 @@ def _get_azure_model_cached():
         azure_deployment=settings.azure_openai_deployment_name,
         openai_api_version=settings.azure_openai_api_version,
         temperature=1.0,
+        max_tokens=100,
         max_retries=5
     )
 

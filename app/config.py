@@ -5,28 +5,32 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """
-    Centralized, typed configuration.
-
-    Reads from environment variables and (optionally) repo-root `.env` / `.ev`.
-    """
+    """Centralized, typed configuration loaded from environment variables."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
     # Runtime switches
     use_mock_llm: bool = True
     mock_similarity_threshold: float = 0.85
 
-    # Optional: prompt file path (e.g prompts/buyer_match_v4.txt)
+    # Optional prompt file path (e.g. prompts/buyer_match_v4.txt)
     prompt_path: str = ""
 
     azure_openai_endpoint: str = ""
     azure_openai_key: str = ""
     azure_openai_deployment_name: str = ""
     azure_openai_api_version: str = ""
+
+    # A client-side HTTP batch is still expanded into one Azure OpenAI request per
+    # input. Keep this deliberately conservative to avoid an instantaneous burst.
+    # This limit is per API process, so normally run one Uvicorn worker unless the
+    # value has been divided across workers.
+    llm_max_concurrency: int = 1
+    llm_min_request_interval_seconds: float = 1.0
 
 
 @lru_cache(maxsize=1)
